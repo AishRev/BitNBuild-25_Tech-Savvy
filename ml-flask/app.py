@@ -1,0 +1,136 @@
+# ml-flask/app.py
+
+import os
+from flask import Flask, request, jsonify, render_template, url_for
+from werkzeug.utils import secure_filename
+from PIL import Image
+import base64
+from io import BytesIO
+
+# Import our custom model classes
+from models.blip_captioning import ImageCaptioner
+from models.detectors import ObjectDetector
+from models.emotion import EmotionAnalyzer
+from models.clip_utils import ThemeExtractor
+from models.tone_generator import ToneGenerator
+
+# --- App Initialization ---
+app = Flask(__name__, template_folder='../frontend/templates', static_folder='../frontend/static')
+
+# --- Configuration ---
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# --- Pre-load ML Models ---
+# This is crucial for performance. Loading models is slow, so we do it once on startup.
+print("--- Initializing AI Models ---")
+captioner = ImageCaptioner()
+detector = ObjectDetector()
+mood_analyzer = EmotionAnalyzer()
+theme_extractor = ThemeExtractor()
+tone_generator = ToneGenerator()
+print("--- All Models Initialized Successfully ---")
+
+# --- Helper Functions ---
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def generate_hashtags(objects: list, themes: list) -> dict:
+    """
+    Generates categorized hashtags from detected objects and themes.
+    This is a simplified logic for demonstration.
+    """
+    # High-reach are general themes
+    high_reach = [f"#{theme.replace(' ', '')}" for theme in themes]
+    high_reach.extend(['#AIContent', '#PhotoOfTheDay', '#InstaGood'])
+    
+    # Niche are specific objects
+    niche = [f"#{obj.replace(' ', '')}" for obj in objects]
+    
+    return {
+        "high_reach": list(set(high_reach))[:5], # Limit to 5 unique
+        "niche": list(set(niche))[:10] # Limit to 10 unique
+    }
+
+# --- Flask Routes ---
+@app.route('/')
+def index():
+    """Renders the main upload page."""
+    return render_template('index.html')
+
+@app.route('/analyze', methods=['POST'])
+def analyze_image():
+    """
+    The core API endpoint. Receives an image, processes it through all models,
+    and returns a complete content package.
+    """
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part in the request"}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+
+        try:
+            # --- AI Pipeline Execution ---
+            img = Image.open(filepath)
+            
+            # 1. Generate Base Caption
+            base_caption = captioner.generate_caption(img)
+            
+            # 2. Generate Toned Captions
+            toned_captions = tone_generator.generate_toned_captions(base_caption)
+            toned_captions['Original'] = base_caption # Add original for comparison
+            
+            # 3. Analyze Mood
+            mood = mood_analyzer.analyze_mood_from_text(base_caption)
+            
+            # 4. Detect Objects
+            objects = detector.detect_objects(img)
+            
+            # 5. Extract Themes
+            candidate_themes = [
+                'Nature', 'Urban', 'Technology', 'Food', 'Portrait', 'Travel', 
+                'Art', 'Fashion', 'Sports', 'Animals', 'Business', 'Abstract'
+            ]
+            themes = theme_extractor.extract_themes(img, candidate_themes)
+            
+            # 6. Generate Hashtags
+            hashtags = generate_hashtags(objects, themes)
+
+            # --- Prepare Response ---
+            # Convert image to base64 to send it back to the frontend without saving it publicly
+            buffered = BytesIO()
+            img.save(buffered, format="JPEG")
+            img_str = base64.b64encode(buffered.getvalue()).decode()
+            
+            response_data = {
+                "success": True,
+                "image_data": f"data:image/jpeg;base64,{img_str}",
+                "captions": toned_captions,
+                "mood": mood,
+                "hashtags": hashtags
+            }
+            
+            return jsonify(response_data)
+
+        except Exception as e:
+            print(f"An error occurred during analysis: {e}")
+            return jsonify({"error": "Failed to process image", "details": str(e)}), 500
+        finally:
+            # Clean up the uploaded file
+            if os.path.exists(filepath):
+                os.remove(filepath)
+    else:
+        return jsonify({"error": "File type not allowed"}), 400
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)

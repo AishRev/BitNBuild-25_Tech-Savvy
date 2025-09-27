@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Spark ✨ AI Content Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Social Spark ✨</h1>
+            <p>Your AI-Powered Content Creation Co-Pilot</p>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <h2>1. Upload Your Image</h2>
+                <form id="upload-form">
+                    <input type="file" id="file-input" name="file" accept="image/*" required>
+                    <label for="file-input" class="file-label">Choose a file...</label>
+                    <span id="file-name">No file chosen</span>
+                    <button type="submit" id="generate-btn">Generate Content</button>
+                </form>
+            </div>
+
+            <div id="loader" class="loader" style="display: none;"></div>
+            
+            <div id="results-dashboard" class="results-dashboard hidden">
+                <h2>2. Your AI-Generated Content Package</h2>
+                <div class="dashboard-grid">
+                    <div class="image-panel">
+                        <h3>Uploaded Image</h3>
+                        <img id="uploaded-image" src="" alt="Uploaded content">
+                        <div class="mood-panel">
+                            <h4>Analyzed Mood</h4>
+                            <p id="mood-text">Neutral</p>
+                        </div>
+                    </div>
+
+                    <div class="content-panel">
+                        <div class="captions-section">
+                            <h3>Caption Options</h3>
+                            <div id="captions-container">
+                                </div>
+                        </div>
+                        <div class="hashtags-section">
+                            <h3>Hashtag Suggestions</h3>
+                            <h4>High-Reach</h4>
+                            <div id="high-reach-hashtags" class="hashtag-group"></div>
+                            <h4>Niche / Specific</h4>
+                            <div id="niche-hashtags" class="hashtag-group"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

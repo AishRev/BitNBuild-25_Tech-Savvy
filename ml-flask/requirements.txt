@@ -1,0 +1,13 @@
+flask
+torch
+torchvision
+torchaudio
+transformers
+accelerate
+bitsandbytes
+Pillow
+numpy
+ultralytics
+python-dotenv
+requests
+sentencepiece
