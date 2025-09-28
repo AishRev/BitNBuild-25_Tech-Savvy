@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Social Spark ✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --primary: #6366f1;
+      --background-light: #f5f7fa;
+      --background-dark: #0f172a;
+      --card-light: rgba(255, 255, 255, 0.7);
+      --card-dark: rgba(30, 41, 59, 0.7);
+      --text-light: #0f172a;
+      --text-dark: #f8fafc;
+      --shadow-light: 0 4px 30px rgba(0, 0, 0, 0.1);
+      --shadow-dark: 0 4px 30px rgba(255, 255, 255, 0.1);
+      --border-light: rgba(255, 255, 255, 0.4);
+      --border-dark: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      transition: background 0.5s ease, color 0.5s ease;
+      background: var(--background-light);
+      color: var(--text-light);
+    }
+
+    body.dark {
+      background: var(--background-dark);
+      color: var(--text-dark);
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 400px;
+      padding: 2rem;
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-light);
+      border: 1px solid var(--border-light);
+      background: var(--card-light);
+      text-align: center;
+      transition: all 0.5s ease;
+    }
+
+    body.dark .login-container {
+      background: var(--card-dark);
+      border-color: var(--border-dark);
+      box-shadow: var(--shadow-dark);
+    }
+
+    .login-container h1 {
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .login-container p {
+      font-size: 0.9rem;
+      color: inherit;
+      margin-bottom: 2rem;
+      opacity: 0.8;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.6);
+      outline: none;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    body.dark .input-group input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-dark);
+    }
+
+    .input-group input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .toggle-mode {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        margin: 0 1rem;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Social Spark ✨</h1>
+    <p>Login to your AI Content Assistant</p>
+
+    <form id="loginForm">
+      <div class="input-group">
+        <input type="email" id="email" placeholder="Email address" required />
+      </div>
+
+      <div class="input-group">
+        <input type="password" id="password" placeholder="Password" required />
+      </div>
+
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+
+    <div class="toggle-mode" id="modeToggle">🌙 Toggle Dark Mode</div>
+  </div>
+
+  <script>
+    // 🌙 Dark mode toggle
+    const toggle = document.getElementById('modeToggle');
+    toggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      toggle.innerHTML = document.body.classList.contains('dark')
+        ? '☀️ Toggle Light Mode'
+        : '🌙 Toggle Dark Mode';
+    });
+
+    // 🚀 Redirect to Flask port (5000)
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const loginBtn = form.querySelector('.login-btn');
+      loginBtn.textContent = 'Logging in...';
+
+      setTimeout(() => {
+        window.location.href = 'http://127.0.0.1:5000';
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
