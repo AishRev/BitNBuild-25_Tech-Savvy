@@ -1,3 +1,21 @@
+# flask
+# torch
+# torchvision
+# torchaudio
+# transformers>=4.41.2 # Update transformers version
+# accelerate
+# bitsandbytes
+# Pillow
+# numpy~=1.26.4 # Pin numpy to a compatible version
+# ultralytics
+# python-dotenv
+# requests
+# sentencepiece
+# timm
+# opencv-python-headless
+# # --- New additions for Phi-3 model ---
+# einops
+
 flask
 torch
 torchvision
