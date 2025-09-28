@@ -1,3 +1,4 @@
+
 // frontend/static/js/script.js
 
 document.addEventListener('DOMContentLoaded', () => {
